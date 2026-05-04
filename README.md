@@ -165,7 +165,7 @@ Visit `http://localhost:3000`.
 
 ## Troubleshooting
 
-- **Vercel install / dependency mismatch**: ensure Vercel installs with **pnpm** (this repo sets `"packageManager"` in `package.json`) and that `pnpm-lock.yaml` is present. Avoid reintroducing a root `package-lock.json` from `npm install`.
+- **Vercel install / dependency mismatch**: ensure Vercel installs with **pnpm** (this repo sets `"packageManager"` in `package.json`) and that `pnpm-lock.yaml` is present and **committed whenever `package.json` dependencies change** — otherwise `pnpm install --frozen-lockfile` (common on CI/Vercel) fails. Avoid reintroducing a root `package-lock.json` from `npm install`.
 - **Build error about two pages resolving to the same path**: ensure there is only one route for each path (for example, don’t keep a parallel route group like `/(site)` defining `art/[slug]` alongside `src/app/art/[slug]`).
 - **Build error about `@tailwindcss/postcss` missing**: run `pnpm install` so `tailwindcss`, `@tailwindcss/postcss`, and `postcss` are present; keep `postcss.config.mjs` at the repo root (Tailwind v4 uses the PostCSS plugin).
 - **Vercel shows “This page couldn’t load”**: make sure `NEXT_PUBLIC_MAPBOX_TOKEN` is set in Vercel Environment Variables (Preview + Production as needed). A missing token causes Mapbox GL JS to throw on load and the app won’t render.
