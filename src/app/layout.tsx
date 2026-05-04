@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Inter, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import { env } from "@/lib/env";
 import {
@@ -61,7 +62,10 @@ export default function RootLayout({
       lang="en"
       className={`${fontSans.variable} ${fontMono.variable} ${fontSerif.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Vercel Web Analytics instrumentation via `@vercel/analytics/next`.
 - Airtable data provider support for artwork reads (`DATA_PROVIDER=airtable`) with base/table/view env configuration and paginated API fetching.
 - Airtable attachment image ingestion in the artwork loader (attachment arrays now resolve to image URL lists the UI can render directly).
 - Expanded `/api/health` diagnostics with provider/config visibility and Airtable field compatibility checks (required/recommended/optional + alias readiness).
@@ -37,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `next/image` now uses a custom loader: Cloudinary delivery URLs are resized/format-optimized by Cloudinary (bypassing `/_next/image` where possible) and other URLs fall back to the built-in optimizer; set a 7-day `minimumCacheTTL`.
 - **`NEXT_PUBLIC_SUBMIT_ENABLED`** semantics: public submit (`/submit` + CTAs) is **on by default**; set to **`false`** or **`0`** to disable (previously required **`true`** with no env entry treated as off).
 - Public **`/submit`** replaces the in-app Cloudinary upload form with an **embedded Airtable** “New Public Artwork Submission” form; the iframe uses a **responsive height** (`clamp(480px, 75dvh, 1200px)`) because cross-origin embeds cannot auto-size to form content.
 - Admin map editing is now read-only: `/api/admin/sheet-row` returns `410`, save behavior is removed from the admin map editor, and docs now direct map updates through Airtable workflows.

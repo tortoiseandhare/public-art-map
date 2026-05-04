@@ -170,6 +170,7 @@ Visit `http://localhost:3000`.
 
 - Add a domain like `map.creativewaco.org` in Vercel.
 - Set the env vars above in Vercel (Production + Preview if desired).
+- Enable **Web Analytics** in the Vercel project (the app includes `@vercel/analytics/next` in the root layout).
 
 ## Scripts (image migration)
 

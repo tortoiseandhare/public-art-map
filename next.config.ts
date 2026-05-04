@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
     viewTransition: true,
   },
   images: {
+    loader: "custom",
+    loaderFile: "./src/lib/image-loader.ts",
+    /** Stable sheet/CDN URLs — improves cache hits on remaining `/_next/image` requests. */
+    minimumCacheTTL: 60 * 60 * 24 * 7,
     remotePatterns: [
       {
         protocol: "https",
