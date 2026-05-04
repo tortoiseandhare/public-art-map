@@ -34,7 +34,6 @@ function devWarnUsingNextImageOptimizer(src: string) {
   if (g.__publicArtMapImageWarnedHosts.has(key)) return;
   g.__publicArtMapImageWarnedHosts.add(key);
 
-  // eslint-disable-next-line no-console
   console.warn(
     `[public-art-map] next/image is using Vercel image optimization for host "${key}". ` +
       `This counts toward Vercel Image Transformations. Source: ${src}`,

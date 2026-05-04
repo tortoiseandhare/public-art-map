@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Vercel installs:** remove committed `package-lock.json`, ignore future npm lockfiles, and pin **pnpm** via `packageManager` in `package.json` so CI/Vercel doesn’t mix npm + pnpm dependency trees.
 - Airtable API error reporting now includes upstream error type/message (for example `VIEW_NAME_NOT_FOUND`) instead of only HTTP status.
 - Health checks now aggregate Airtable fields across sampled records so sparse rows do not produce false “missing column” signals.
 - **Airtable linked collection labels:** resolve linked-record IDs (`rec...`) to human collection names so `/collections` no longer shows raw Airtable record IDs.
