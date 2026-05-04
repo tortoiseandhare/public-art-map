@@ -16,7 +16,8 @@ Data can come from either:
 ## UI notes
 
 - **Theming:** the app uses **Tailwind CSS v4**, **shadcn/ui** primitives, and a shared **semantic palette** (CSS variables in `src/app/globals.css`) so the floating panel, detail pages, embed shell, **map preview** card, and Mapbox **marker** chrome stay visually consistent.
-- **Branding:** fixed **top-left** chrome ([Creative Waco](https://creativewaco.org/) logo + **Public Art Map**) via shared **`SiteBrandBar`** on the **home map**, **`/art/[slug]`**, and **404**; copy and root metadata titles read from **`src/lib/site.ts`**. On the map, the bar sits clear of the **left** list panel. **Embed** artwork pages show a header link to the full map using the same product name.
+- **Branding:** fixed **top-left** chrome ([Creative Waco](https://creativewaco.org/) logo + **Public Art Map**) via shared **`SiteBrandBar`** on the **home map**, **`/art/[slug]`**, and **404**; copy and root metadata titles read from **`src/lib/site.ts`**. On the map, the bar sits clear of the **left** list panel. **Embed** artwork pages show a header link to the full map using the same product name. The logo image is a plain **`<img>`** (Supabase-hosted asset).
+- **Remote images:** artwork UI uses `next/image` with a **custom loader** (`src/lib/image-loader.ts`): **Airtable** and **Cloudinary** delivery URLs are fetched from their CDNs instead of Vercel’s `/_next/image` path where possible (fewer billed image transformations while keeping responsive `srcset`). Other HTTPS hosts still fall back to the built-in optimizer.
 - **Home landing (`/`):** software-style intro (headline, short description, CTAs) above a **rounded-corner** map card. The interactive Mapbox map is optimized for performance:
   - **Desktop/tablet:** the interactive map mounts automatically.
   - **Mobile (narrow viewports):** the map loads on demand (tap **Explore the map** / **Tap to load map**); once loaded, the map switches into a **full-viewport** layout.

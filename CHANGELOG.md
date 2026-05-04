@@ -38,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `next/image` now uses a custom loader: Cloudinary delivery URLs are resized/format-optimized by Cloudinary (bypassing `/_next/image` where possible) and other URLs fall back to the built-in optimizer; set a 7-day `minimumCacheTTL`.
+- `next/image` custom loader: **Cloudinary** URLs get on-CDN transforms (bypass `/_next/image`); **Airtable** attachment hosts (`dl.airtable.com`, `*.airtableusercontent.com`) are served directly with width/quality query params so `srcset` stays valid without Vercel re-encoding; remaining remotes still use the built-in optimizer. **Dev-only:** first use per host logs a console warning when a URL still routes through `/_next/image` (counts toward Vercel Image Transformations). `minimumCacheTTL` remains 7 days for optimized fallbacks.
+- **Brand logo:** render the Supabase-hosted Creative Waco mark with a plain `<img>` instead of `next/image` for reliable loading and fewer unnecessary optimizations.
 - **`NEXT_PUBLIC_SUBMIT_ENABLED`** semantics: public submit (`/submit` + CTAs) is **on by default**; set to **`false`** or **`0`** to disable (previously required **`true`** with no env entry treated as off).
 - Public **`/submit`** replaces the in-app Cloudinary upload form with an **embedded Airtable** “New Public Artwork Submission” form; the iframe uses a **responsive height** (`clamp(480px, 75dvh, 1200px)`) because cross-origin embeds cannot auto-size to form content.
 - Admin map editing is now read-only: `/api/admin/sheet-row` returns `410`, save behavior is removed from the admin map editor, and docs now direct map updates through Airtable workflows.
