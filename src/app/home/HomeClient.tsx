@@ -37,6 +37,11 @@ type Props = {
   initialFiltersFromUrl: HomeFiltersFromUrl;
   /** Optional `art` query param — selected artwork slug for shareable map links. */
   initialArtSlug?: string;
+  /**
+   * Embed map: when there is no `art=` and no share-link facet/year selection, select the first
+   * catalog row so the iframe opens with a map preview immediately.
+   */
+  embedSelectFirstWhenNone?: boolean;
 };
 
 type FacetOption = { key: string; label: string };
@@ -342,6 +347,7 @@ function resolveInitialSelectedSlug(
   artworkList: Artwork[],
   initial: HomeFiltersFromUrl,
   initialArt?: string,
+  embedSelectFirstWhenNone?: boolean,
 ): string | undefined {
   const qs = serializeHomeFiltersToQueryString({
     categories: initial.categories,
@@ -361,6 +367,9 @@ function resolveInitialSelectedSlug(
   if (hasFacetOrYear && qs) {
     return filterArtworksByHomeUrlQuery(artworkList, qs)[0]?.slug;
   }
+  if (embedSelectFirstWhenNone) {
+    return filtered[0]?.slug;
+  }
   return undefined;
 }
 
@@ -370,6 +379,7 @@ export function HomeClient({
   submitEnabled,
   initialFiltersFromUrl,
   initialArtSlug,
+  embedSelectFirstWhenNone = false,
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
@@ -382,7 +392,12 @@ export function HomeClient({
   const [embedCopied, setEmbedCopied] = useState(false);
 
   const [selectedSlug, setSelectedSlug] = useState<string | undefined>(() =>
-    resolveInitialSelectedSlug(artworks, initialFiltersFromUrl, initialArtSlug),
+    resolveInitialSelectedSlug(
+      artworks,
+      initialFiltersFromUrl,
+      initialArtSlug,
+      embedSelectFirstWhenNone,
+    ),
   );
   /**
    * Bumps when map/list preview goes from a slug → none so `MapView` can refit even if internal
@@ -927,10 +942,10 @@ export function HomeClient({
     if (skipInitialFilterSelectionSyncRef.current) {
       skipInitialFilterSelectionSyncRef.current = false;
       prevFilterDriveKeyRef.current = key;
-      if (hasRefinements && filtered.length > 0) {
+      if (filtered.length > 0) {
         const inList =
           selectedSlug != null && filtered.some((a) => a.slug === selectedSlug);
-        if (!inList) {
+        if (!inList && (hasRefinements || isEmbedRoute)) {
           setSelectedSlug(filtered[0]!.slug);
         }
       }
@@ -966,6 +981,7 @@ export function HomeClient({
     filteredSlugsKey,
     listRefinementActive,
     selectedSlug,
+    isEmbedRoute,
   ]);
   /* eslint-enable react-hooks/set-state-in-effect */
 

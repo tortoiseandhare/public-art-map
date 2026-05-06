@@ -39,6 +39,7 @@ export default async function EmbedMapPage({ searchParams }: Props) {
         submitEnabled={submitEnabled}
         initialFiltersFromUrl={initialFiltersFromUrl}
         initialArtSlug={initialArtSlug}
+        embedSelectFirstWhenNone
       />
     </Suspense>
   );

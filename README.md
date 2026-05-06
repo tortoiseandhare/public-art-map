@@ -7,7 +7,7 @@ Next.js app that renders:
 - **Collection map pages** at `/collections/[slug]` (fullscreen map + bottom carousel)
 - **SEO detail pages** at `/art/[slug]`
 - **Public submission** intake at `/submit` (**embedded Airtable form**; enabled by default, set `NEXT_PUBLIC_SUBMIT_ENABLED=false` to hide)
-- **Embeddable map** at `/embed` (iframe-friendly; supports the same `cat/comm/coll/ymin/ymax/fs/art` query params as `/`)
+- **Embeddable map** at `/embed` (iframe-friendly; supports the same `cat/comm/coll/ymin/ymax/fs/art` query params as `/`; without `art=` it selects the first catalog artwork on load)
 - **Webflow-safe artwork embeds** at `/embed/art/[slug]` (noindex + canonical to `/art/[slug]`)
 
 Data can come from either:
@@ -159,6 +159,7 @@ Notes:
 - `/embed/*` routes send `Content-Security-Policy: frame-ancestors *` so **any** parent origin can iframe embed routes (**clickjacking risk** — intentional for widest embed compatibility).
 
 - To deep link to a selected artwork, include `art=<slug>` in the query string.
+- With **no** `art=` (and no facet/year share params), `/embed` loads with the **first artwork** in the list selected so the iframe shows a map preview immediately.
 - To embed a single artwork detail page, use `/embed/art/<slug>`.
 
 ## Dev
