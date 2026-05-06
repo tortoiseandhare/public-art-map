@@ -42,7 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Default `/embed/*` CSP **`frame-ancestors`** allowances now include **`https://www1.creativewaco.org`** (in addition to `creativewaco.org`).
+- `/embed/*` CSP **`frame-ancestors`** is now **`*`** so **any** parent site can iframe embed routes (**intentionally permissive**; increases clickjacking surface).
 
 - `next/image` custom loader: **Cloudinary** URLs get on-CDN transforms (bypass `/_next/image`); **Airtable** attachment hosts (`dl.airtable.com`, `*.airtableusercontent.com`) are served directly with width/quality query params so `srcset` stays valid without Vercel re-encoding; remaining remotes still use the built-in optimizer. **Dev-only:** first use per host logs a console warning when a URL still routes through `/_next/image` (counts toward Vercel Image Transformations). `minimumCacheTTL` remains 7 days for optimized fallbacks.
 - **Brand logo:** render the Supabase-hosted Creative Waco mark with a plain `<img>` instead of `next/image` for reliable loading and fewer unnecessary optimizations.
@@ -204,5 +204,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-- Restrict iframe embedding on `/embed/*` with `Content-Security-Policy: frame-ancestors` (defaults to Creative Waco domains, extensible via `EMBED_ALLOWED_ORIGINS`).
+- Allow iframe embedding of `/embed/*` from **any** ancestor origin via `Content-Security-Policy: frame-ancestors *` (no per-domain allowlist).
 - Remove `X-Frame-Options` on `/embed/*` so allowed third-party origins can embed (CSP `frame-ancestors` is authoritative).

@@ -23,29 +23,14 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
-    const allowed = new Set<string>([
-      "https://creativewaco.org",
-      "https://www.creativewaco.org",
-      // Alternate primary host used by the Creative Waco marketing site stack.
-      "https://www1.creativewaco.org",
-    ]);
-
-    for (const origin of (process.env.EMBED_ALLOWED_ORIGINS ?? "")
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean)) {
-      allowed.add(origin);
-    }
-
-    const frameAncestors = ["'self'", ...Array.from(allowed)].join(" ");
-
     return [
       {
         source: "/embed/:path*",
         headers: [
           {
             key: "Content-Security-Policy",
-            value: `frame-ancestors ${frameAncestors};`,
+            // Allow iframe embedding from any ancestor origin (`*` cannot be combined with other sources).
+            value: `frame-ancestors *;`,
           },
         ],
       },

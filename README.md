@@ -92,7 +92,7 @@ NEXT_PUBLIC_MAPBOX_STYLE_URL="mapbox://styles/..."
 # Seconds between CSV refetches (ISR). Use 0 for no cache—always fetch latest sheet.
 REVALIDATE_SECONDS="300"
 # NEXT_PUBLIC_ARTWORK_IMAGE_URL_TEMPLATE="https://cdn.example.com/img/{id}.webp"
-EMBED_ALLOWED_ORIGINS="https://creativewaco.org,https://www.creativewaco.org"
+# NOTE: `/embed/*` uses `Content-Security-Policy: frame-ancestors *` (any site may iframe embed routes).
 
 # Optional (scripts only): Cloudinary migration
 # CLOUDINARY_CLOUD_NAME="..."
@@ -156,8 +156,7 @@ Use an Embed element:
 
 Notes:
 
-- `/embed/*` routes send `Content-Security-Policy: frame-ancestors …` so only approved parent origins can iframe the map embed routes.
-  Extend allowances beyond Creative Waco defaults with **`EMBED_ALLOWED_ORIGINS`** (comma-separated HTTPS origins).
+- `/embed/*` routes send `Content-Security-Policy: frame-ancestors *` so **any** parent origin can iframe embed routes (**clickjacking risk** — intentional for widest embed compatibility).
 
 - To deep link to a selected artwork, include `art=<slug>` in the query string.
 - To embed a single artwork detail page, use `/embed/art/<slug>`.
