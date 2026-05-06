@@ -7,7 +7,8 @@ Next.js app that renders:
 - **Collection map pages** at `/collections/[slug]` (fullscreen map + bottom carousel)
 - **SEO detail pages** at `/art/[slug]`
 - **Public submission** intake at `/submit` (**embedded Airtable form**; enabled by default, set `NEXT_PUBLIC_SUBMIT_ENABLED=false` to hide)
-- **Webflow-safe embeds** at `/embed/art/[slug]` (noindex + canonical to `/art/[slug]`)
+- **Embeddable map** at `/embed` (iframe-friendly; supports the same `cat/comm/coll/ymin/ymax/fs/art` query params as `/`)
+- **Webflow-safe artwork embeds** at `/embed/art/[slug]` (noindex + canonical to `/art/[slug]`)
 
 Data can come from either:
 - **Published Google Sheet CSV** (`DATA_PROVIDER=sheet`, default; no Google credentials required for reads)
@@ -146,12 +147,17 @@ Use an Embed element:
 
 ```html
 <iframe
-  src="https://map.creativewaco.org/embed/art/<slug>"
+  src="https://map.creativewaco.org/embed?fs=1"
   style="width:100%;height:700px;border:0;"
   loading="lazy"
   referrerpolicy="no-referrer-when-downgrade"
 ></iframe>
 ```
+
+Notes:
+
+- To deep link to a selected artwork, include `art=<slug>` in the query string.
+- To embed a single artwork detail page, use `/embed/art/<slug>`.
 
 ## Dev
 

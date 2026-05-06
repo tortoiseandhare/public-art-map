@@ -23,6 +23,159 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Embed routes: hide site chrome so iframes stay clean. */
+[data-embed-root] [data-site-brand-bar] {
+  display: none !important;
+}
+
+/* Hide the home page hero/intro in embeds (keep the map + list). */
+[data-embed-root] [aria-label="Page introduction"] {
+  display: none !important;
+}
+
+/* Hide collection back link floating bar inside embed. */
+[data-embed-root] [data-collection-floating-bar] {
+  display: none !important;
+}
+
+/* Embed polish: subtle background + crisper panel framing */
+[data-embed-root] {
+  background:
+    radial-gradient(
+      900px 520px at 20% 0%,
+      color-mix(in oklch, var(--primary) 16%, transparent),
+      rgba(255, 255, 255, 0) 60%
+    ),
+    radial-gradient(
+      900px 520px at 90% 10%,
+      color-mix(in oklch, var(--primary) 10%, transparent),
+      rgba(255, 255, 255, 0) 62%
+    ),
+    var(--background);
+}
+
+[data-embed-root] [data-home-artwork-panel] {
+  border-color: color-mix(in oklch, var(--border) 92%, transparent);
+  background: color-mix(in oklch, var(--card) 96%, white);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 22px 60px rgba(0, 0, 0, 0.28);
+}
+
+/* Embed: convert the floating home panel into a drawer. */
+[data-embed-root] [data-home-artwork-panel][data-embed-drawer="true"] {
+  position: fixed;
+  z-index: 30;
+  transition: transform 0.22s ease;
+  will-change: transform;
+  /* Allow the drawer tab/handle to sit outside the panel edge. */
+  overflow: visible;
+}
+
+@media (min-width: 641px) {
+  [data-embed-root] [data-home-artwork-panel][data-embed-drawer="true"] {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: min(280px, 88vw);
+    max-height: none;
+    border-radius: 0 22px 22px 0;
+    /* Keep the drawer tab visible when closed */
+    transform: translateX(calc(-100% + 36px));
+  }
+  [data-embed-root]
+    [data-home-artwork-panel][data-embed-drawer="true"][data-embed-drawer-open="true"] {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 640px) {
+  [data-embed-root] [data-home-artwork-panel][data-embed-drawer="true"] {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    max-height: min(78svh, 620px);
+    border-radius: 22px 22px 0 0;
+    /* Keep the drawer tab visible when closed */
+    transform: translateY(calc(100% - 40px));
+  }
+  [data-embed-root]
+    [data-home-artwork-panel][data-embed-drawer="true"][data-embed-drawer-open="true"] {
+    transform: translateY(0);
+  }
+}
+
+/* Drawer tab / handle (embed only) */
+[data-embed-root] [data-home-artwork-panel] [data-embed-drawer-tab="true"] {
+  position: absolute;
+  z-index: 5;
+  border: 1px solid color-mix(in oklch, var(--border) 86%, transparent);
+  background: #fff;
+  color: color-mix(in oklch, var(--foreground) 94%, transparent);
+  box-shadow: none;
+  font: inherit;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  user-select: none;
+}
+
+@media (min-width: 641px) {
+  [data-embed-root] [data-home-artwork-panel] [data-embed-drawer-tab="true"] {
+    /* Outside the drawer edge */
+    right: -22px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 64px;
+    border-radius: 999px;
+  }
+}
+
+[data-embed-root] [data-home-artwork-panel] [data-embed-drawer-tab-chevron="true"] {
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1;
+  -webkit-text-stroke: 1px color-mix(in oklch, var(--foreground) 94%, transparent);
+  text-shadow: 0 0 0 color-mix(in oklch, var(--foreground) 94%, transparent);
+}
+
+@media (max-width: 640px) {
+  [data-embed-root] [data-home-artwork-panel] [data-embed-drawer-tab="true"] {
+    left: 50%;
+    top: -28px;
+    transform: translateX(-50%);
+    width: 92px;
+    height: 48px;
+    border-radius: 999px;
+  }
+}
+
+/* Tighten embed drawer paddings */
+[data-embed-root] [data-embed-drawer-header="true"] {
+  padding: 10px 10px 8px;
+}
+
+[data-embed-root] [data-embed-filter-header="true"] {
+  padding: 8px 10px 6px !important;
+}
+
+[data-embed-root] [data-embed-panel-body="true"] {
+  padding: 0 8px 8px !important;
+}
+
+/* Drawer header (embed only) */
+[data-embed-root] [data-embed-drawer-header="true"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 55%, transparent);
+  background: color-mix(in oklch, var(--card) 92%, transparent);
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

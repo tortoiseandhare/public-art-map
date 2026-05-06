@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Embeddable main map at `/embed` (iframe-friendly), including an embed-only drawer for the artwork list/filters.
+- Home page **Embed** button with copy-to-clipboard iframe snippet for the current map state.
 - Vercel Web Analytics instrumentation via `@vercel/analytics/next`.
 - Airtable data provider support for artwork reads (`DATA_PROVIDER=airtable`) with base/table/view env configuration and paginated API fetching.
 - Airtable attachment image ingestion in the artwork loader (attachment arrays now resolve to image URL lists the UI can render directly).
@@ -201,3 +203,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Restrict iframe embedding on `/embed/*` with `Content-Security-Policy: frame-ancestors` (defaults to Creative Waco domains, extensible via `EMBED_ALLOWED_ORIGINS`).
+- Remove `X-Frame-Options` on `/embed/*` so allowed third-party origins can embed (CSP `frame-ancestors` is authoritative).

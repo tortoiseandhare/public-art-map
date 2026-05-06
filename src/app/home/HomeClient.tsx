@@ -27,6 +27,7 @@ import {
   stripArtSlugFromQueryString,
 } from "./home-filter-url";
 import styles from "./home.module.css";
+import embedStyles from "./embed-modal.module.css";
 
 type Props = {
   artworks: Artwork[];
@@ -374,6 +375,12 @@ export function HomeClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const isEmbedRoute = pathname.startsWith("/embed");
+  const [embedDrawerOpen, setEmbedDrawerOpen] = useState(() => !isEmbedRoute);
+
+  const [embedOpen, setEmbedOpen] = useState(false);
+  const [embedCopied, setEmbedCopied] = useState(false);
+
   const [selectedSlug, setSelectedSlug] = useState<string | undefined>(() =>
     resolveInitialSelectedSlug(artworks, initialFiltersFromUrl, initialArtSlug),
   );
@@ -448,6 +455,15 @@ export function HomeClient({
     }
   }, [mountMap]);
 
+  // Embed UX: treat the left panel as a drawer (desktop open by default, mobile closed).
+  useEffect(() => {
+    if (!isEmbedRoute) return;
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia?.("(min-width: 641px)");
+    const next = mql?.matches ? true : false;
+    setEmbedDrawerOpen(next);
+  }, [isEmbedRoute]);
+
   // Mobile UX: once the map is mounted on narrow screens, force fullscreen map layout.
   // This avoids leaving the map in a partially-sized "card" state on mobile.
   useEffect(() => {
@@ -496,6 +512,35 @@ export function HomeClient({
     else p.delete("art");
     return p.toString();
   }, [filterQueryString, selectedSlug]);
+
+  const embedUrl = useMemo(() => {
+    const base =
+      typeof window !== "undefined" && window.location?.origin
+        ? window.location.origin
+        : "";
+    const qs = mapAndLinkQueryString ? `?${mapAndLinkQueryString}` : "";
+    return `${base}/embed${qs}`;
+  }, [mapAndLinkQueryString]);
+
+  const embedCode = useMemo(() => {
+    return `<iframe src="${embedUrl}" width="100%" height="600" style="border:0" loading="lazy" allowfullscreen></iframe>`;
+  }, [embedUrl]);
+
+  useEffect(() => {
+    if (!embedOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setEmbedOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [embedOpen]);
+
+  useEffect(() => {
+    if (!embedOpen) return;
+    setEmbedCopied(false);
+  }, [embedOpen]);
 
   // Apply `fs=1` before paint so a follow-up effect cannot strip it from the URL first (desktop paste / share links).
   useLayoutEffect(() => {
@@ -1012,6 +1057,15 @@ export function HomeClient({
       <div className={styles.shell}>
         <SiteBrandBar titleAs="p" />
 
+        {isEmbedRoute && mountMap && embedDrawerOpen ? (
+          <button
+            type="button"
+            className="fixed inset-0 z-[25] bg-black/10 sm:hidden"
+            aria-label="Close drawer"
+            onClick={() => setEmbedDrawerOpen(false)}
+          />
+        ) : null}
+
         {mapAbsolute ? (
           <button
             type="button"
@@ -1037,6 +1091,13 @@ export function HomeClient({
                 onClick={scrollToMap}
               >
                 Explore the map
+              </button>
+              <button
+                type="button"
+                className={styles.heroBtn}
+                onClick={() => setEmbedOpen(true)}
+              >
+                Embed
               </button>
               {submitEnabled ? (
                 <Link className={styles.heroBtn} href="/submit" prefetch={false}>
@@ -1120,9 +1181,37 @@ export function HomeClient({
         <aside
           className={`${styles.panel}${filtersOpen ? ` ${styles.panelFiltersOpen}` : ""}`}
           data-home-artwork-panel
+          data-embed-drawer={isEmbedRoute ? "true" : "false"}
+          data-embed-drawer-open={isEmbedRoute && embedDrawerOpen ? "true" : "false"}
+          id={isEmbedRoute ? "embed-drawer-panel" : undefined}
           aria-label="Artwork list"
         >
-          <div className={styles.filterHeader}>
+          {isEmbedRoute ? (
+            <button
+              type="button"
+              data-embed-drawer-tab="true"
+              aria-label={embedDrawerOpen ? "Hide list" : "Show list"}
+              aria-expanded={embedDrawerOpen}
+              aria-controls="embed-drawer-panel"
+              onClick={() => setEmbedDrawerOpen((v) => !v)}
+            >
+              <span aria-hidden data-embed-drawer-tab-chevron="true">
+                {embedDrawerOpen ? "‹" : "›"}
+              </span>
+            </button>
+          ) : null}
+          {isEmbedRoute ? (
+            <div data-embed-drawer-header="true">
+              <div>
+                <p className="text-sm font-extrabold tracking-tight">Public Art Map</p>
+                <p className="text-xs text-muted-foreground">Embedded map</p>
+              </div>
+              <Link href="/?fs=1" prefetch={false} className="text-xs font-extrabold">
+                Open full map
+              </Link>
+            </div>
+          ) : null}
+          <div className={styles.filterHeader} data-embed-filter-header={isEmbedRoute ? "true" : "false"}>
             <input
               className={styles.filterSearch}
               type="search"
@@ -1154,7 +1243,7 @@ export function HomeClient({
             </button>
           </div>
 
-        <div className={styles.panelBody}>
+        <div className={styles.panelBody} data-embed-panel-body={isEmbedRoute ? "true" : "false"}>
           {filtersOpen ? (
             <div className={styles.filtersInner} role="group" id="filters-panel">
               <div className={styles.filterRow}>
@@ -1357,16 +1446,18 @@ export function HomeClient({
                             .join(" · ")}
                         </span>
                       </button>
-                      <Link
-                        href={`/art/${a.slug}${
-                          mapAndLinkQueryString ? `?${mapAndLinkQueryString}` : ""
-                        }`}
-                        className={styles.detailLink}
-                        prefetch={false}
-                        transitionTypes={["nav-forward"]}
-                      >
-                        Details
-                      </Link>
+                      {!isEmbedRoute ? (
+                        <Link
+                          href={`/art/${a.slug}${
+                            mapAndLinkQueryString ? `?${mapAndLinkQueryString}` : ""
+                          }`}
+                          className={styles.detailLink}
+                          prefetch={false}
+                          transitionTypes={["nav-forward"]}
+                        >
+                          Details
+                        </Link>
+                      ) : null}
                     </div>
                   </li>
                 ))}
@@ -1395,6 +1486,72 @@ export function HomeClient({
           </div>
         </section>
     </div>
+    {embedOpen ? (
+      <div
+        className={embedStyles.shell}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Embed this map"
+      >
+        <button
+          type="button"
+          className={embedStyles.backdrop}
+          aria-label="Close embed modal"
+          onClick={() => setEmbedOpen(false)}
+        />
+        <div className={embedStyles.card}>
+          <div className={embedStyles.headerRow}>
+            <div>
+              <p className={embedStyles.title}>Embed this map</p>
+              <p className={embedStyles.subtitle}>
+                Includes your current filters and selection.
+              </p>
+            </div>
+            <button
+              type="button"
+              className={embedStyles.closeBtn}
+              onClick={() => setEmbedOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+
+          <div className={embedStyles.section}>
+            <label className={embedStyles.label} htmlFor="embed-code">
+              Embed code
+            </label>
+            <textarea
+              id="embed-code"
+              className={embedStyles.code}
+              value={embedCode}
+              readOnly
+              rows={4}
+              onFocus={(e) => e.currentTarget.select()}
+            />
+
+            <div className={embedStyles.footerRow}>
+              <p className={embedStyles.url}>{embedUrl}</p>
+              <button
+                type="button"
+                className={embedStyles.copyBtn}
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(embedCode);
+                    setEmbedCopied(true);
+                    window.setTimeout(() => setEmbedCopied(false), 1500);
+                  } catch {
+                    // Fallback: rely on textarea focus/select for manual copy.
+                    setEmbedCopied(false);
+                  }
+                }}
+              >
+                {embedCopied ? "Copied" : "Copy"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    ) : null}
     </ViewTransition>
   );
 }

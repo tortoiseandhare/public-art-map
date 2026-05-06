@@ -4,8 +4,11 @@ export default function EmbedLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-0 bg-background text-foreground">
-      <div className="mx-auto max-w-lg px-4 py-6">{children}</div>
+    <div
+      className="min-h-dvh bg-background text-foreground"
+      data-embed-root="true"
+    >
+      {children}
     </div>
   );
 }

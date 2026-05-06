@@ -1,0 +1,150 @@
+.backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: rgb(0 0 0 / 0.5);
+}
+
+.shell {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: min(640px, 100%);
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid color-mix(in oklch, var(--border) 86%, transparent);
+  box-shadow: var(--shadow-xl);
+  border-radius: calc(var(--radius) + 10px);
+  padding: clamp(18px, 3.2vw, 28px);
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: color-mix(in oklch, var(--foreground) 62%, transparent);
+}
+
+.closeBtn {
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklch, var(--border) 88%, transparent);
+  background: var(--background);
+  color: inherit;
+  font: inherit;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background: color-mix(in oklch, var(--muted) 92%, transparent);
+}
+
+.closeBtn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px color-mix(in oklch, var(--card) 98%, transparent),
+    0 0 0 4px color-mix(in oklch, var(--ring) 55%, transparent),
+    var(--shadow-sm);
+}
+
+.section {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.code {
+  width: 100%;
+  resize: vertical;
+  min-height: 104px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in oklch, var(--border) 86%, transparent);
+  background: var(--background);
+  color: inherit;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.35;
+  padding: 12px 12px;
+}
+
+.code:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px color-mix(in oklch, var(--card) 98%, transparent),
+    0 0 0 4px color-mix(in oklch, var(--ring) 45%, transparent),
+    var(--shadow-sm);
+}
+
+.footerRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.url {
+  flex: 1 1 220px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: color-mix(in oklch, var(--foreground) 58%, transparent);
+  word-break: break-all;
+}
+
+.copyBtn {
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--primary) 92%, black);
+  color: var(--primary-foreground);
+  font: inherit;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 10px 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.copyBtn:hover {
+  filter: brightness(1.03);
+}
+
+.copyBtn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px color-mix(in oklch, var(--card) 98%, transparent),
+    0 0 0 4px color-mix(in oklch, var(--ring) 55%, transparent),
+    var(--shadow-sm);
+}
