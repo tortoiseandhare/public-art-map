@@ -205,4 +205,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - Allow iframe embedding of `/embed/*` from **any** ancestor origin via `Content-Security-Policy: frame-ancestors *` (no per-domain allowlist).
-- Remove `X-Frame-Options` on `/embed/*` so allowed third-party origins can embed (CSP `frame-ancestors` is authoritative).
+- Remove `X-Frame-Options` on `/embed/*` so browsers rely on CSP `frame-ancestors` framing rules (rather than denying all cross-origin framing via `SAMEORIGIN`).
