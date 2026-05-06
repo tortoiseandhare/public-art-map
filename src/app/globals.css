@@ -153,27 +153,12 @@ body {
   }
 }
 
-/* Tighten embed drawer paddings */
-[data-embed-root] [data-embed-drawer-header="true"] {
-  padding: 10px 10px 8px;
-}
-
 [data-embed-root] [data-embed-filter-header="true"] {
   padding: 8px 10px 6px !important;
 }
 
 [data-embed-root] [data-embed-panel-body="true"] {
   padding: 0 8px 8px !important;
-}
-
-/* Drawer header (embed only) */
-[data-embed-root] [data-embed-drawer-header="true"] {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-bottom: 1px solid color-mix(in oklch, var(--border) 55%, transparent);
-  background: color-mix(in oklch, var(--card) 92%, transparent);
 }
 
 * {

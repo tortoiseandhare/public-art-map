@@ -1200,17 +1200,6 @@ export function HomeClient({
               </span>
             </button>
           ) : null}
-          {isEmbedRoute ? (
-            <div data-embed-drawer-header="true">
-              <div>
-                <p className="text-sm font-extrabold tracking-tight">Public Art Map</p>
-                <p className="text-xs text-muted-foreground">Embedded map</p>
-              </div>
-              <Link href="/?fs=1" prefetch={false} className="text-xs font-extrabold">
-                Open full map
-              </Link>
-            </div>
-          ) : null}
           <div className={styles.filterHeader} data-embed-filter-header={isEmbedRoute ? "true" : "false"}>
             <input
               className={styles.filterSearch}
