@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
     const allowed = new Set<string>([
       "https://creativewaco.org",
       "https://www.creativewaco.org",
+      // Alternate primary host used by the Creative Waco marketing site stack.
+      "https://www1.creativewaco.org",
     ]);
 
     for (const origin of (process.env.EMBED_ALLOWED_ORIGINS ?? "")

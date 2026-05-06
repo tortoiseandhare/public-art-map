@@ -42,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Default `/embed/*` CSP **`frame-ancestors`** allowances now include **`https://www1.creativewaco.org`** (in addition to `creativewaco.org`).
+
 - `next/image` custom loader: **Cloudinary** URLs get on-CDN transforms (bypass `/_next/image`); **Airtable** attachment hosts (`dl.airtable.com`, `*.airtableusercontent.com`) are served directly with width/quality query params so `srcset` stays valid without Vercel re-encoding; remaining remotes still use the built-in optimizer. **Dev-only:** first use per host logs a console warning when a URL still routes through `/_next/image` (counts toward Vercel Image Transformations). `minimumCacheTTL` remains 7 days for optimized fallbacks.
 - **Brand logo:** render the Supabase-hosted Creative Waco mark with a plain `<img>` instead of `next/image` for reliable loading and fewer unnecessary optimizations.
 - **`NEXT_PUBLIC_SUBMIT_ENABLED`** semantics: public submit (`/submit` + CTAs) is **on by default**; set to **`false`** or **`0`** to disable (previously required **`true`** with no env entry treated as off).

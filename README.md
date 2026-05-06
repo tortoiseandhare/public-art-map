@@ -156,6 +156,9 @@ Use an Embed element:
 
 Notes:
 
+- `/embed/*` routes send `Content-Security-Policy: frame-ancestors …` so only approved parent origins can iframe the map embed routes.
+  Extend allowances beyond Creative Waco defaults with **`EMBED_ALLOWED_ORIGINS`** (comma-separated HTTPS origins).
+
 - To deep link to a selected artwork, include `art=<slug>` in the query string.
 - To embed a single artwork detail page, use `/embed/art/<slug>`.
 
