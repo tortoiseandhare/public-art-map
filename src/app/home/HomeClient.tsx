@@ -1108,6 +1108,9 @@ export function HomeClient({
               >
                 Explore the map
               </button>
+              <Link className={styles.heroBtn} href="/waco-murals" prefetch={false}>
+                Waco murals
+              </Link>
               <button
                 type="button"
                 className={styles.heroBtn}

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { env } from "@/lib/env";
 import { buildCollectionSlugMaps } from "@/lib/collection-routes";
 import { getArtworks } from "@/lib/sheet";
+import { WACO_MURALS_PAGE_PATH } from "@/lib/waco-murals";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = env.NEXT_PUBLIC_SITE_URL();
@@ -22,6 +23,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.85,
+    },
+    {
+      url: new URL(WACO_MURALS_PAGE_PATH, baseUrl).toString(),
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
     },
     ...[...slugToName.keys()].map((slug) => ({
       url: new URL(`/collections/${slug}`, baseUrl).toString(),

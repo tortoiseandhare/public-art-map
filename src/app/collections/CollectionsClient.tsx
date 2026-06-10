@@ -57,7 +57,7 @@ export function CollectionsClient({ entries }: { entries: CollectionIndexEntry[]
               <div className={nearbyStyles.cardFlat}>
                 <div className={styles.cardStack}>
                   <Link
-                    href={`/collections/${e.slug}`}
+                    href={e.href ?? `/collections/${e.slug}`}
                     className={styles.cardMain}
                     transitionTypes={["nav-forward"]}
                   >

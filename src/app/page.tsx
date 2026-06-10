@@ -8,6 +8,12 @@ import {
 } from "./home/home-filter-url";
 import { env } from "@/lib/env";
 import { getArtworks } from "@/lib/sheet";
+import {
+  WACO_MURALS_DISPLAY_NAME,
+  WACO_MURALS_META_DESCRIPTION,
+  WACO_MURALS_PAGE_PATH,
+  getWacoMurals,
+} from "@/lib/waco-murals";
 import styles from "./home/home.module.css";
 
 export const metadata: Metadata = {
@@ -44,6 +50,7 @@ async function HomeServer({
   initialArtSlug?: string;
 }) {
   const artworks = await getArtworks();
+  const murals = getWacoMurals(artworks);
   const submitEnabled = env.submitPublicArtEnabled();
   return (
     <>
@@ -61,6 +68,18 @@ async function HomeServer({
         <p>
           Browse artwork detail pages for Creative Waco&apos;s Public Art Map.
         </p>
+        <h3>{WACO_MURALS_DISPLAY_NAME}</h3>
+        <p>{WACO_MURALS_META_DESCRIPTION}</p>
+        <p>
+          <a href={WACO_MURALS_PAGE_PATH}>Browse all {WACO_MURALS_DISPLAY_NAME.toLowerCase()}</a>
+        </p>
+        <ul>
+          {murals.map((a) => (
+            <li key={a.slug}>
+              <a href={`/art/${a.slug}`}>{a.title}</a>
+            </li>
+          ))}
+        </ul>
         <ul>
           {artworks.slice(0, 250).map((a) => (
             <li key={a.slug}>

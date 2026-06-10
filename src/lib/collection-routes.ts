@@ -90,6 +90,8 @@ export type CollectionIndexEntry = {
   slug: string;
   description?: string;
   imageUrl?: string;
+  /** When set, cards link here instead of `/collections/[slug]`. */
+  href?: string;
 };
 
 /** Index rows for `/collections` — includes stable slug for detail URLs. */

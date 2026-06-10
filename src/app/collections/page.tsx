@@ -3,6 +3,12 @@ import Link from "next/link";
 import { getArtworks } from "@/lib/sheet";
 import { artworksInCollection, getCollectionIndexEntries } from "@/lib/collection-routes";
 import { getCollectionSeoMapByName } from "@/lib/airtable-collections";
+import {
+  WACO_MURALS_DISPLAY_NAME,
+  WACO_MURALS_INTRO,
+  WACO_MURALS_PAGE_PATH,
+  getWacoMurals,
+} from "@/lib/waco-murals";
 import { SiteBrandBar } from "@/components/SiteBrandBar";
 import shellStyles from "../art/art-detail-shell.module.css";
 import { CollectionsClient } from "./CollectionsClient";
@@ -11,7 +17,7 @@ import dirStyles from "../art/art-directory.module.css";
 export const metadata: Metadata = {
   title: "Collections",
   description:
-    "Browse public art in Waco by collection — full-screen collection pages plus map view.",
+    "Browse public art in Waco by collection — including Waco murals, Sculpture Zoo, utility box art, and more on full-screen map pages.",
   alternates: { canonical: "/collections" },
 };
 
@@ -19,16 +25,28 @@ export default async function CollectionsPage() {
   const artworks = await getArtworks();
   const baseEntries = getCollectionIndexEntries(artworks);
   const seoByName = await getCollectionSeoMapByName(baseEntries.map((e) => e.name));
-  const entries = baseEntries.map((entry) => {
-    const inCollection = artworksInCollection(entry.name, artworks);
-    const featuredArtwork = inCollection.find((a) => a.image || a.images?.[0]);
-    const imageUrl = featuredArtwork?.image ?? featuredArtwork?.images?.[0];
-    return {
-      ...entry,
-      description: seoByName.get(entry.name)?.description,
-      imageUrl,
-    };
-  });
+  const wacoMurals = getWacoMurals(artworks);
+  const wacoMuralsHero = wacoMurals.find((a) => a.image || a.images?.[0]);
+  const entries = [
+    {
+      name: WACO_MURALS_DISPLAY_NAME,
+      count: wacoMurals.length,
+      slug: "waco-murals",
+      description: WACO_MURALS_INTRO,
+      imageUrl: wacoMuralsHero?.image ?? wacoMuralsHero?.images?.[0],
+      href: WACO_MURALS_PAGE_PATH,
+    },
+    ...baseEntries.map((entry) => {
+      const inCollection = artworksInCollection(entry.name, artworks);
+      const featuredArtwork = inCollection.find((a) => a.image || a.images?.[0]);
+      const imageUrl = featuredArtwork?.image ?? featuredArtwork?.images?.[0];
+      return {
+        ...entry,
+        description: seoByName.get(entry.name)?.description,
+        imageUrl,
+      };
+    }),
+  ];
 
   return (
     <div className={shellStyles.shell}>
