@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Collections browsing routes:** add `/collections` index and `/collections/[slug]` fullscreen map pages with collection metadata, JSON-LD, and slug-stable routing from sheet collection names.
 - **Collection map experience:** add a bottom artwork carousel, previous/next collection controls, and map/detail link context that preserves the selected collection via `coll=` query state.
 - **Collection metadata integration:** add Airtable collection metadata reads from **`Public Art Map Collections`** for collection descriptions and SEO copy, with UI support on `/collections` cards and `/collections/[slug]` summary/footer.
+- **Waco Murals SEO landing page** at `/waco-murals`: fullscreen map of all **Murals** category artworks with keyword-focused metadata, JSON-LD (`WebPage`, `ItemList`, `BreadcrumbList`), sitemap entry, crawlable mural index, and internal links from `/`, `/collections`, and the home hero.
 
 ### Fixed
 
