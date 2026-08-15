@@ -91,7 +91,8 @@ NEXT_PUBLIC_MAPBOX_TOKEN="pk.XXXX"
 
 # Optional (defaults to the Creative Waco Mapbox Studio style when unset)
 NEXT_PUBLIC_MAPBOX_STYLE_URL="mapbox://styles/..."
-# Seconds between CSV refetches (ISR). Use 0 for no cache—always fetch latest sheet.
+# Seconds between data refetches (ISR). Use 0 for no cache on sheet CSV (always fresh).
+# Airtable reads floor 0 → 300s (never no-store); see env.AIRTABLE_REVALIDATE_SECONDS().
 REVALIDATE_SECONDS="300"
 # NEXT_PUBLIC_ARTWORK_IMAGE_URL_TEMPLATE="https://cdn.example.com/img/{id}.webp"
 # NOTE: `/embed/*` uses `Content-Security-Policy: frame-ancestors *` (any site may iframe embed routes).
@@ -118,7 +119,7 @@ REVALIDATE_SECONDS="300"
 Notes:
 
 - `NEXT_PUBLIC_SITE_URL` is used to build absolute URLs (OpenGraph/Twitter images, canonical URLs, `robots.txt`, `sitemap.xml`). In production it falls back to `https://map.creativewaco.org` when unset (and on Vercel will also use `VERCEL_URL`).
-- When `DATA_PROVIDER=airtable`, artwork reads are served from Airtable (paginated API fetch, optional `AIRTABLE_VIEW` filter).
+- When `DATA_PROVIDER=airtable`, artwork reads are served from Airtable (paginated API fetch via `src/lib/airtable-client.ts`, optional `AIRTABLE_VIEW` filter). List reads use Next fetch revalidation + `unstable_cache`, and `getArtworks()` is request-deduped with React `cache()`. `REVALIDATE_SECONDS=0` still means always-fresh **sheet** CSV; for Airtable it floors to **300s**.
 
 ## Admin + API
 

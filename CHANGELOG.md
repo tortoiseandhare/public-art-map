@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Airtable read caching:** shared `src/lib/airtable-client.ts` paginates list requests with `next.revalidate` (floors `REVALIDATE_SECONDS=0` to **300** for Airtable only), `unstable_cache` keyed by base/table/view, and React `cache()` on `getArtworks()` so metadata + page (and Collections SEO) no longer re-paginate the same tables per request. Sheet CSV can still use `REVALIDATE_SECONDS=0` / `no-store`. Health Airtable probe unchanged (`no-store`).
+
 - `/embed/*` CSP **`frame-ancestors`** is now **`*`** so **any** parent site can iframe embed routes (**intentionally permissive**; increases clickjacking surface).
 
 - Remove the redundant **embedded drawer chrome header** (product title / “Open full map”) so the drawer starts at search + filters.

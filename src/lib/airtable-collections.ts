@@ -1,12 +1,10 @@
-import { env } from "@/lib/env";
+import { listAirtableCollectionRecords } from "@/lib/airtable-client";
 import { slugify } from "@/lib/sheet";
 
 export type CollectionSeoFields = {
   name: string;
   description?: string;
 };
-
-const COLLECTIONS_TABLE_NAME = "Public Art Map Collections";
 
 function normalizeRowKeys(row: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -31,39 +29,10 @@ function normalizeForCompare(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
+/** Shared Collections table rows (same Airtable list cache as artwork name resolution). */
 async function fetchCollectionRows(): Promise<Record<string, unknown>[]> {
-  const token = env.AIRTABLE_API_TOKEN().trim();
-  const baseId = env.AIRTABLE_BASE_ID().trim();
-  if (!token || !baseId) return [];
-
-  const rows: Record<string, unknown>[] = [];
-  let offset: string | undefined;
-  do {
-    const url = new URL(
-      `https://api.airtable.com/v0/${encodeURIComponent(baseId)}/${encodeURIComponent(COLLECTIONS_TABLE_NAME)}`,
-    );
-    url.searchParams.set("pageSize", "100");
-    if (offset) url.searchParams.set("offset", offset);
-
-    const res = await fetch(url.toString(), {
-      next: { revalidate: env.REVALIDATE_SECONDS() || 300 },
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return [];
-
-    const json = (await res.json()) as {
-      records?: Array<{ fields?: Record<string, unknown> }>;
-      offset?: string;
-    };
-    for (const record of json.records ?? []) {
-      if (record.fields && typeof record.fields === "object") {
-        rows.push(record.fields);
-      }
-    }
-    offset = json.offset;
-  } while (offset);
-
-  return rows;
+  const records = await listAirtableCollectionRecords();
+  return records.map((r) => r.fields);
 }
 
 export async function getCollectionSeoByName(

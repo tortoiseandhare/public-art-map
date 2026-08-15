@@ -70,6 +70,15 @@ export const env = {
     if (parsed === 0) return 0;
     return parsed > 0 ? parsed : 300;
   },
+  /**
+   * Revalidate window for Airtable API reads.
+   * Same as `REVALIDATE_SECONDS`, but floors `0` to **300** so Airtable never uses
+   * `cache: "no-store"` (sheet CSV may still honor `0`).
+   */
+  AIRTABLE_REVALIDATE_SECONDS: (): number => {
+    const seconds = env.REVALIDATE_SECONDS();
+    return seconds === 0 ? 300 : seconds;
+  },
   EMBED_ALLOWED_ORIGINS: () =>
     (process.env.EMBED_ALLOWED_ORIGINS ?? "")
       .split(",")

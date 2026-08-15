@@ -1,5 +1,8 @@
+import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { z } from "zod";
 import Papa from "papaparse";
+import { listAirtableCollectionRecords, listAirtableRecords } from "./airtable-client";
 import { env } from "./env";
 
 export type Artwork = {
@@ -28,7 +31,6 @@ type Provider = "sheet" | "airtable";
 type FetchOptions =
   | { cache: "no-store" }
   | { next: { revalidate: number } };
-const AIRTABLE_COLLECTIONS_TABLE = "Public Art Map Collections";
 
 const rawArtworkSchema = z.object({
   slug: z.string().trim().min(1),
@@ -198,102 +200,36 @@ function getRequestOptions(): FetchOptions {
 }
 
 async function fetchAirtableRows(): Promise<Record<string, unknown>[]> {
-  const token = env.AIRTABLE_API_TOKEN().trim();
-  const baseId = env.AIRTABLE_BASE_ID().trim();
   const table = env.AIRTABLE_TABLE().trim();
   const view = env.AIRTABLE_VIEW().trim();
-  if (!token || !baseId || !table) {
+  if (!table) {
     throw new Error(
       "Airtable provider requires AIRTABLE_API_TOKEN, AIRTABLE_BASE_ID, and AIRTABLE_TABLE.",
     );
   }
 
-  const records: Record<string, unknown>[] = [];
-  let offset: string | undefined;
-  const requestOptions = getRequestOptions();
-  do {
-    const url = new URL(
-      `https://api.airtable.com/v0/${encodeURIComponent(baseId)}/${encodeURIComponent(table)}`,
-    );
-    url.searchParams.set("pageSize", "100");
-    if (view) url.searchParams.set("view", view);
-    if (offset) url.searchParams.set("offset", offset);
+  const records = await listAirtableRecords({
+    table,
+    view: view || undefined,
+  });
 
-    const res = await fetch(url.toString(), {
-      ...requestOptions,
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) {
-      const body = (await res.json().catch(() => null)) as
-        | { error?: { type?: string; message?: string } }
-        | null;
-      const apiType = body?.error?.type?.trim();
-      const apiMessage = body?.error?.message?.trim();
-      const details = [apiType, apiMessage].filter(Boolean).join(": ");
-      throw new Error(
-        details
-          ? `Failed to fetch Airtable (${res.status}) - ${details}`
-          : `Failed to fetch Airtable (${res.status})`,
-      );
-    }
-    const json = (await res.json()) as {
-      records?: Array<{ id?: string; fields?: Record<string, unknown> }>;
-      offset?: string;
-    };
-    for (const r of json.records ?? []) {
-      if (r.fields && typeof r.fields === "object") {
-        records.push({
-          __record_id: r.id,
-          ...r.fields,
-        });
-      }
-    }
-    offset = json.offset;
-  } while (offset);
-
-  return records;
+  return records.map((r) => ({
+    __record_id: r.id,
+    ...r.fields,
+  }));
 }
 
 async function fetchAirtableCollectionNameByRecordId(): Promise<Map<string, string>> {
-  const token = env.AIRTABLE_API_TOKEN().trim();
-  const baseId = env.AIRTABLE_BASE_ID().trim();
-  if (!token || !baseId) return new Map();
-
   const out = new Map<string, string>();
-  let offset: string | undefined;
-  const requestOptions = getRequestOptions();
+  const records = await listAirtableCollectionRecords();
 
-  do {
-    const url = new URL(
-      `https://api.airtable.com/v0/${encodeURIComponent(baseId)}/${encodeURIComponent(AIRTABLE_COLLECTIONS_TABLE)}`,
-    );
-    url.searchParams.set("pageSize", "100");
-    if (offset) url.searchParams.set("offset", offset);
-
-    const res = await fetch(url.toString(), {
-      ...requestOptions,
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return new Map();
-
-    const json = (await res.json()) as {
-      records?: Array<{ id?: string; fields?: Record<string, unknown> }>;
-      offset?: string;
-    };
-
-    for (const record of json.records ?? []) {
-      const id = record.id?.trim();
-      if (!id) continue;
-      const fields = record.fields ?? {};
-      const normalized = normalizeRowKeys(fields);
-      const name = pickFirst(normalized, ["name", "title", "collection", "collection_name"]);
-      if (typeof name === "string" && name.trim()) {
-        out.set(id, name.trim());
-      }
+  for (const record of records) {
+    const normalized = normalizeRowKeys(record.fields);
+    const name = pickFirst(normalized, ["name", "title", "collection", "collection_name"]);
+    if (typeof name === "string" && name.trim()) {
+      out.set(record.id, name.trim());
     }
-
-    offset = json.offset;
-  } while (offset);
+  }
 
   return out;
 }
@@ -316,7 +252,7 @@ async function readSourceRows(provider: Provider): Promise<Record<string, unknow
   return parseCsvRows(csvText);
 }
 
-export async function getArtworks(): Promise<Artwork[]> {
+async function loadArtworks(): Promise<Artwork[]> {
   const provider = env.DATA_PROVIDER();
   const rows = await readSourceRows(provider);
   const collectionNameByRecordId =
@@ -342,26 +278,26 @@ export async function getArtworks(): Promise<Artwork[]> {
       }
     }
 
-     // If id/slug is missing, derive from title (best effort).
-     const rawSlug = coerced.slug;
-     const hasSlug =
-       typeof rawSlug === "string" ? Boolean(rawSlug.trim()) : rawSlug !== undefined;
-     if (!hasSlug) {
-       const title = coerced.title;
-       if (typeof title === "string" && title.trim()) {
-         const base = slugify(title) || "artwork";
-         let candidate = base;
-         let i = 2;
-         while (usedSlugs.has(candidate)) {
-           candidate = `${base}-${i++}`;
-         }
-         coerced.slug = candidate;
-       }
-     }
+    // If id/slug is missing, derive from title (best effort).
+    const rawSlug = coerced.slug;
+    const hasSlug =
+      typeof rawSlug === "string" ? Boolean(rawSlug.trim()) : rawSlug !== undefined;
+    if (!hasSlug) {
+      const title = coerced.title;
+      if (typeof title === "string" && title.trim()) {
+        const base = slugify(title) || "artwork";
+        let candidate = base;
+        let i = 2;
+        while (usedSlugs.has(candidate)) {
+          candidate = `${base}-${i++}`;
+        }
+        coerced.slug = candidate;
+      }
+    }
 
     const maybe = rawArtworkSchema.safeParse(coerced);
     if (!maybe.success) continue;
-     usedSlugs.add(maybe.data.slug);
+    usedSlugs.add(maybe.data.slug);
     const images = parseImageUrls(maybe.data.image);
     results.push({
       ...maybe.data,
@@ -373,6 +309,47 @@ export async function getArtworks(): Promise<Artwork[]> {
   results.sort((a, b) => a.title.localeCompare(b.title));
   return results;
 }
+
+function artworksCacheKeyParts(): string[] {
+  const provider = env.DATA_PROVIDER();
+  if (provider === "airtable") {
+    return [
+      "artworks",
+      "airtable",
+      env.AIRTABLE_BASE_ID().trim(),
+      env.AIRTABLE_TABLE().trim(),
+      env.AIRTABLE_VIEW().trim(),
+    ];
+  }
+  return ["artworks", "sheet", env.SHEET_CSV_URL()];
+}
+
+/**
+ * Catalog loader. React `cache()` dedupes within a single request (e.g. generateMetadata + page).
+ * `unstable_cache` reuses the parsed catalog across requests (Airtable always; sheet when revalidate > 0).
+ */
+export const getArtworks = cache(async (): Promise<Artwork[]> => {
+  const provider = env.DATA_PROVIDER();
+
+  if (provider === "airtable") {
+    const revalidate = env.AIRTABLE_REVALIDATE_SECONDS();
+    return unstable_cache(async () => loadArtworks(), artworksCacheKeyParts(), {
+      revalidate,
+      tags: ["artworks"],
+    })();
+  }
+
+  const seconds = env.REVALIDATE_SECONDS();
+  if (seconds === 0) {
+    // Honor no-store sheet fetches; still request-deduped via React cache().
+    return loadArtworks();
+  }
+
+  return unstable_cache(async () => loadArtworks(), artworksCacheKeyParts(), {
+    revalidate: seconds,
+    tags: ["artworks"],
+  })();
+});
 
 export async function getArtworkBySlug(slug: string): Promise<Artwork | null> {
   const artworks = await getArtworks();
