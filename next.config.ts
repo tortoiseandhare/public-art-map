@@ -22,6 +22,30 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/art/art-center-waco",
+        destination: "/collections/art-center-of-waco",
+        statusCode: 301,
+      },
+      {
+        source: "/art/art-center-waco-5",
+        destination: "/collections/art-center-of-waco",
+        statusCode: 301,
+      },
+      {
+        source: "/art/art-center-waco-6",
+        destination: "/collections/art-center-of-waco",
+        statusCode: 301,
+      },
+      {
+        source: "/art/heart-of-texas",
+        destination: "/art/heart-of-texas-wrap",
+        statusCode: 301,
+      },
+    ];
+  },
   async headers() {
     return [
       {

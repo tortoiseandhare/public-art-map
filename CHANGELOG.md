@@ -69,6 +69,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Preview layout:** constrain preview **width** to the space beside the **floating list** and the viewport edge; let the **image** block **height** follow each photo (with a **viewport max-height** cap) instead of a fixed box with empty bands.
 - **Default Mapbox style:** when **`NEXT_PUBLIC_MAPBOX_STYLE_URL`** is unset, fall back to this app’s **Creative Waco** Mapbox Studio style (override per deployment as needed).
 
+## Production release - 2026-09-15
+
+### Fixed
+
+- **Legacy artwork URLs:** Added direct HTTP `301` redirects for three Art Center Waco aliases and the renamed Heart of Texas Wrap record. Redirects preserve query parameters and reach the canonical route without a chain.
+
+### Changed
+
+- **Deployment packaging:** Excluded root-level Lighthouse, PageSpeed, and audit screenshot artifacts from Vercel uploads without deleting the local files.
+
 ## [0.2.0] - 2026-04-24
 
 ### Added

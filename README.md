@@ -15,6 +15,19 @@ Data can come from either:
 - **Published Google Sheet CSV** (`DATA_PROVIDER=sheet`, default; no Google credentials required for reads)
 - **Airtable API** (`DATA_PROVIDER=airtable`)
 
+## Legacy URL redirects
+
+The production app permanently redirects four confirmed legacy artwork URLs before filesystem routing:
+
+| Legacy path | Canonical destination |
+|---|---|
+| `/art/art-center-waco` | `/collections/art-center-of-waco` |
+| `/art/art-center-waco-5` | `/collections/art-center-of-waco` |
+| `/art/art-center-waco-6` | `/collections/art-center-of-waco` |
+| `/art/heart-of-texas` | `/art/heart-of-texas-wrap` |
+
+These redirects use HTTP `301`, preserve incoming query parameters, and avoid redirect chains. Unverified artwork matches are intentionally not redirected to generic collection or homepage destinations.
+
 ## UI notes
 
 - **Theming:** the app uses **Tailwind CSS v4**, **shadcn/ui** primitives, and a shared **semantic palette** (CSS variables in `src/app/globals.css`) so the floating panel, detail pages, embed shell, **map preview** card, and Mapbox **marker** chrome stay visually consistent.
@@ -187,6 +200,7 @@ Visit `http://localhost:3000`.
 - Add a domain like `map.creativewaco.org` in Vercel.
 - Set the env vars above in Vercel (Production + Preview if desired).
 - Enable **Web Analytics** in the Vercel project (the app includes `@vercel/analytics/next` in the root layout).
+- Root-level Lighthouse, PageSpeed, and audit screenshot artifacts are excluded from deployment uploads through `.vercelignore`; the local audit files are retained.
 
 ## Scripts (image migration)
 
