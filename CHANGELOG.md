@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Legacy URL redirect:** `/utilities` → `/collections/utility-box-art` (HTTP `301`).
 - Embeddable main map at `/embed` (iframe-friendly), including an embed-only drawer for the artwork list/filters.
 - Home page **Embed** button with copy-to-clipboard iframe snippet for the current map state.
 - Vercel Web Analytics instrumentation via `@vercel/analytics/next`.

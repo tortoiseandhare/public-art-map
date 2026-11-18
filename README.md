@@ -17,10 +17,11 @@ Data can come from either:
 
 ## Legacy URL redirects
 
-The production app permanently redirects four confirmed legacy artwork URLs before filesystem routing:
+The production app permanently redirects these legacy paths before filesystem routing:
 
 | Legacy path | Canonical destination |
 |---|---|
+| `/utilities` | `/collections/utility-box-art` |
 | `/art/art-center-waco` | `/collections/art-center-of-waco` |
 | `/art/art-center-waco-5` | `/collections/art-center-of-waco` |
 | `/art/art-center-waco-6` | `/collections/art-center-of-waco` |

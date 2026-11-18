@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/utilities",
+        destination: "/collections/utility-box-art",
+        statusCode: 301,
+      },
+      {
         source: "/art/art-center-waco",
         destination: "/collections/art-center-of-waco",
         statusCode: 301,
